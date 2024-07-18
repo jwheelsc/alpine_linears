@@ -1,0 +1,11 @@
+The parameters below work for the original section of crack
+
+bcs = 5             ## this is the size of the center chip used to move through the linear trough
+halfBcs = int(np.floor(bcs/2))
+bckChipSize = 11    ## this is the size of the chip used to identify the background
+halfBkgChip = int(np.floor(bckChipSize/2))
+diffAnomThresh = 11  ## this is how far above the background the center pixel must be to qualify as a starting point
+dmSz = 155          ## the size of the sampling window
+gaussSigma=1.1      ## size of the standard deviation of the gaussian smooting window
+distThresh = 1
+minCrackLength = 10

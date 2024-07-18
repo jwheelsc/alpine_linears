@@ -1,0 +1,12 @@
+for the wrinkled terrain, the unique element matrix section 
+works well, but it doesn't work for the flat section of terrain
+
+for the flat section, specifying that the chip be a certain
+distance in y from the top boundary works for the flat terrain, but it doesn't for the 
+wrinkled terrain
+
+when I come back, reread the code to understand it fully, then 
+fix the uniqe random number matrix so that it works for all,
+then figure out how to work with the boundary problem described above
+and figure out what to do if n_j is great than 1 (two elements)
+are the same distance, probably by averagin x and y values
