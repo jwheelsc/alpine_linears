@@ -35,12 +35,34 @@ rast = gu.Raster(filename)
 
 # In[]
 
-
+# llx = 535000; lly = 5574700; urx = 540300; ury = 5580000
 #llx = 536802; lly = 5578395; urx = 537774; ury = 5579407;
-#llx = 537000; lly = 5579000; urx = 537200; ury = 5579200;
-llx = 537000-2000; lly = 5579000-2000; urx = 537200-2000; ury = 5579200-2000;
-rast.crop((llx,lly,urx,ury),inplace = True)
-rast.show(ax = "new",cmap = "Greys_r")
+#llx = 537000; lly = 5579000; urx = 537200; ury = 5579200; #this is typically the original
+#llx = 537000-2000; lly = 5579000-2000; urx = 537200-2000; ury = 5579200-2000;  #this is typically the _2
+#llx = 536500; lly = 5578500; urx = 537900; ury = 5579900;  #this is a bigger domain
+
+
+LLX = 535000; LLY = 5574700; URX = 540300; URY = 5580000
+distX = URX-LLX
+distY = URY-LLY
+overlap = 50
+numBlock = 21
+xDom = np.divide(distX-overlap,numBlock) + overlap
+yDom = np.divide(distY-overlap,numBlock) + overlap
+
+leftBounds = np.linspace(LLX,URX-xDom,21)
+rightBounds = np.linspace(LLX+xDom-overlap,URX,21)
+lowerBounds = np.linspace(LLY,URY-yDom,21)
+upperBounds = np.linspace(LLY+yDom-overlap,URY,21)
+
+for jj in np.arange(np.size(upperBounds)):
+    ury = upperBounds[jj]
+    lly = lowerBounds[jj]
+    for ii in np.arange(np.size(rightBounds)):
+        llx = leftBounds[ii]
+        urx = rightBounds[ii]
+        rast.crop((llx,lly,urx,ury),inplace = True)
+        rast.show(ax = "new",cmap = "Greys_r")
 
 
 # here you are simply plotting the data above but in 3D view and downsampled by dx
@@ -119,60 +141,18 @@ ax[3].imshow(diffDEM,cmap = 'jet',extent = [0,xs,0,ys])
 ax[3].set_title('diff DEM')
 
 
-# # In[204]:
-
-
-# dVals = diffDEM.ravel()
-# dBin = 0.25
-# binL = np.arange(-8,9,dBin)
-# binC = binL[0:-1]+(dBin/2)
-# pdf,indx = np.histogram(dVals[~np.isnan(dVals)],bins=binL)
-# plt.plot(binC,pdf)
-
-
-# In[221]:
-
-
-# hs_rescale = exposure.rescale_intensity(hs, in_range=(p2, p98))
-
-
-# In[216]:
-
-
-# hs,slope = hillshade(diffDEM,270,180)
-# p2, p98 = np.percentile(hs, (2, 90))
-# hs_rescale = exposure.rescale_intensity(hs, in_range=(p2, p98))
-# thresh = threshold_otsu(hs_rescale)
-# hs_thresh = hs_rescale > thresh
-# hs_rescale[hsThresh] = np.mean(hs_rescale.ravel())
-# hs_rescale[hsThresh] = 1
-
-# fig, (ax) = plt.subplots(2,2,figsize=(14,14))
-# ax[0,0].imshow(hs,cmap = 'Grays')
-#ax[0,0].plot(hs[200,:] + hs[200,:],alpha=0.5,linewidth=0.8,color = 'red')
-#dat1 = diffDEM[200,:]*20
-#dat1 = dat1[~np.isnan(dat1)]
-#ax[0,0].plot(dat1 + (200-np.mean(dat1)),alpha=0.5,linewidth=0.8,color = 'blue')
-# ax[0,0].set_title('hs')
-# ax[0,1].imshow(hs_rescale,cmap = 'Grays')
-# ax[0,1].plot(hs_rescale[200,:]+200,alpha=1)
-# ax[0,1].set_title('hs stretch')
-# ax[1,0].imshow(hs_thresh,cmap = 'binary')
-# ax[1,0].set_title('hs_thresh')
-# ax[1,1].imshow(hs_rescale,cmap = 'binary')
-# ax[1,1].set_title('hs rescale')
-
-
-# In[222]:
+# %% here you are saving all of the raster data
 
 
 dd_rast = rast.copy(new_array=diffDEM)
-dd_rast.save(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\diffDEM_2.tif')
+dd_rast.save(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\diffDEM_big.tif')
 
 
 ddhs_rast = rast.copy(new_array=hs)
-ddhs_rast.save(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\diffDEM_hs_2.tif')
+ddhs_rast.save(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\diffDEM_hs_big.tif')
 
+DEM_rast = rast.copy(new_array=rastData)
+DEM_rast.save(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\rastDEM_big.tif')
 
 # In[207]:
 

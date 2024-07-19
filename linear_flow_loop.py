@@ -27,8 +27,9 @@ from scipy.ndimage import gaussian_filter
 from scipy.ndimage import median_filter
 
 # %% import the the raster files created by another program
-dd_rast = gu.Raster(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\diffDEM.tif')
-ddhs_rast = gu.Raster(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\diffDEM_hs.tif')
+dd_rast = gu.Raster(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\diffDEM_2.tif')
+ddhs_rast = gu.Raster(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\diffDEM_hs_2.tif')
+DEM_rast = gu.Raster(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\rastDEM_2.tif')
 
 
 # %% plot the raster data being imorted
@@ -330,13 +331,14 @@ for l in np.arange(len(crackList)):
 # crackList.append(innerCrackList)
 
 # %% Here you are sorting the cracks, then 
+plt.close('all')
 crackListAve = []
 crackListFit = []
 numCracks = len(crackList)
 r2 = np.zeros(numCracks)
-
+aveSlopeCrack = np.zeros(numCracks)
 for crk in np.arange(numCracks):
-# crk = 3
+# crk = 4
     crack = crackList[crk]
     crack_s = np.sort(crack,axis=0)
     c_x = crack[:,1]
@@ -377,8 +379,28 @@ for crk in np.arange(numCracks):
     SStotT = np.sum(SStot)
     r2[crk] = 1 - np.divide(SSresT,SStotT)
     
-    if r2[crk]>0.8:
-        plt.plot(c_xU,pFit,'go')
+    # if r2[crk]>0.8:
+    #     plt.plot(c_xU,pFit,'g-o')
+    
+    ## in this next bit of code you are pltting the elevation drop along the linear
+    ## by finding the distance between points and getting a best linear fit
+    fig,ax = plt.subplots(1,1)
+    DEM_dat = DEM_rast.data
+    lenX = np.size(c_x)
+    z = np.zeros(lenX)
+    distArr = np.sqrt(np.square(np.diff(c_y))+np.square(np.diff(c_x)))
+    distArr = np.hstack((0,distArr))
+    for D in np.arange(lenX):
+        z[D] = DEM_dat[int(c_y[D]),int(c_x[D])]
+    
+    totalDist = np.cumsum(distArr)
+    ax.plot(totalDist,z)
+    
+    zfit = np.polyfit(totalDist,z,1)
+    fncP = np.poly1d(zfit)
+    zFit = fncP(totalDist)
+    ax.plot(totalDist,zFit)
+    aveSlopeCrack[crk] = np.abs(zfit[0])
 
 #%%
 #plt.plot(np.flipud(expandedCrackU[:,1]),np.flipud(expandedCrackU[:,0]),'.')
