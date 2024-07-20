@@ -18,8 +18,8 @@ from scipy import signal
 from scipy import spatial as spt
 from scipy import interpolate
 import matplotlib.patches as mpatches
-from IPython import get_ipython
-get_ipython().run_line_magic('matplotlib', 'qt')
+#from IPython import get_ipython
+#get_ipython().run_line_magic('matplotlib', 'qt')
 import sys
 
 # %% import scipy tools
@@ -27,9 +27,18 @@ from scipy.ndimage import gaussian_filter
 from scipy.ndimage import median_filter
 
 # %% import the the raster files created by another program
-dd_rast = gu.Raster(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\diffDEM_2.tif')
-ddhs_rast = gu.Raster(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\diffDEM_hs_2.tif')
-DEM_rast = gu.Raster(r'C:\Users\jcrompto\Documents\code\python_scripts\jupyter_notebooks\remote_sensing\find_linears\saved_mtx\rastDEM_2.tif')
+
+foldr = 'C:\\Users\\jcrompto\\Documents\\code\\python_scripts\\detect_alpine_linears\\saveDEMs\\Joffre\\'
+
+jj = 0
+ii = 1
+
+str1 = foldr + 'diffDEM_' + str(jj) + '_' + str(ii) + '.tif'
+dd_rast = gu.Raster(str1)
+str2 = foldr + 'diffDEM_hs_' + str(jj) + '_' + str(ii) + '.tif'
+ddhs_rast = gu.Raster(str2)
+str3 = foldr + 'rastDEM_' + str(jj) + '_' + str(ii) + '.tif'
+DEM_rast = gu.Raster(str3)
 
 
 # %% plot the raster data being imorted
@@ -43,7 +52,7 @@ halfBcs = int(np.floor(bcs/2))
 bckChipSize = 9    ## this is the size of the chip used to identify the background
 halfBkgChip = int(np.floor(bckChipSize/2))
 diffAnomThresh = 11  ## this is how far above the background the center pixel must be to qualify as a starting point
-dmSz = 155          ## the size of the sampling window
+dmSz = 300-20          ## the size of the sampling window
 gaussSigma=1      ## size of the standard deviation of the gaussian smooting window
 distThresh = 10
 minCrackLength = 10
@@ -60,6 +69,7 @@ dims = np.shape(gH)
 xDim = dims[1]
 yDim = dims[0]
 for xi in np.arange(xDim):
+    print(xi)
     for yj in np.arange(yDim):
         zVal = np.copy(gH[yj,xi])
         inds = np.where(gH==zVal)
@@ -111,12 +121,12 @@ for j in np.arange(halfBkgChip,dmSz-(halfBkgChip+1),2,dtype = int): # start the 
         # instX = np.where(yCtr==expandedCrackULong[:,1])
         # inst = np.intersect1d(instX,instY)
         # NoCrackInChip = inst.size==0
-        OneInBckChip = np.sum(gH_zeros[intY_up:intY_dn,intX_lf:intX_rt])
+        #OneInBckChip = np.sum(gH_zeros[intY_up:intY_dn,intX_lf:intX_rt])
              
         if diffMean > diffAnomThresh and np.sum(dCtr<distThresh)==0:   # a center pixel stands out above the average and no other cracks 
                                                             # have been previously identified in other pixels in the background chip              
             
-            print('you found a reasonable threshold')
+            #print('you found a reasonable threshold')
             gH_cp = np.copy(gH)
             zMax = np.max(bckgChip)   # find where that chip has a max
             arB = gH==zMax
@@ -139,8 +149,8 @@ for j in np.arange(halfBkgChip,dmSz-(halfBkgChip+1),2,dtype = int): # start the 
                 zMax = np.max(chip)   # find where that chip has a max
                 if zMax ==0 :
                     break
-                print(zMax)
-                print(chip)
+                #print(zMax)
+                #print(chip)
                 arB = gH==zMax
                 ind_M = np.where(arB)
                 #plt.imshow(chip_1,cmap = 'Grays')
@@ -161,7 +171,7 @@ for j in np.arange(halfBkgChip,dmSz-(halfBkgChip+1),2,dtype = int): # start the 
             if maxMiddleY.size>minCrackLength:
                     
                  #plt.disableAutoRange()
-                #plt.plot(maxMiddleX,maxMiddleY,'r-+')
+                plt.plot(maxMiddleX,maxMiddleY,'r-+')
                 #plt.autoRange()
                 crackElements = np.vstack((crackElements,np.hstack((maxMiddleY,maxMiddleX))))
                 count+=1
@@ -227,25 +237,25 @@ while np.sum(zeroArr==0)>1:
             numNeigh[m] = np.size(np.where(d2Els0==np.min(d2Els0)))
          
         if (np.sum(np.diff(numNeigh)) == 0) and (np.sum(np.diff(distNeigh)) == 0):
-            print('theyre equal and equal')
+            #print('theyre equal and equal')
             minEl_in = int(np.squeeze(minEl)[0])
         if (np.sum(np.diff(numNeigh)) == 0) and (np.sum(np.diff(distNeigh)) != 0):
-            print('theyre equal')
+            #print('theyre equal')
             elMin_in = np.where(distNeigh == np.min(distNeigh))
             minEl_in = int(np.squeeze(minEl)[np.squeeze(elMin_in)])
         if (np.absolute(np.sum(np.diff(numNeigh))) > 0):
-            print('theyre not equal')
+            #print('theyre not equal')
             elMin_in = np.where(numNeigh == np.min(numNeigh))
             minEl_in = int(np.squeeze(minEl)[np.squeeze(elMin_in)])
         if minEl_in>np.size(xListLoop):
-            print('too manu elements for xList lop')
+            #print('too manu elements for xList lop')
             sys.exit()
         minEl = minEl_in        
-        print('number of neighbors = ', numNeigh)
-        print('finished the inner loop')
+        #print('number of neighbors = ', numNeigh)
+        #print('finished the inner loop')
     if np.size(minEl)>2:
         minEl = np.squeeze(minEl)[0]
-    print('outer loop')
+    #print('outer loop')
     xNext = xListLoop[minEl]   # find the minimum 
     yNext = yListLoop[minEl]
     k = np.where(np.logical_and((yNext==expandedCrackU[:,0]),(xNext==expandedCrackU[:,1])))
@@ -258,7 +268,7 @@ while np.sum(zeroArr==0)>1:
 
 for l in np.arange(len(crackList)):
     cracks = crackList[l] 
-    #plt.plot(cracks[:,1],cracks[:,0],'b-')
+    plt.plot(cracks[:,1],cracks[:,0],'b-')
 
 
 
@@ -331,7 +341,7 @@ for l in np.arange(len(crackList)):
 # crackList.append(innerCrackList)
 
 # %% Here you are sorting the cracks, then 
-plt.close('all')
+# plt.close('all')
 crackListAve = []
 crackListFit = []
 numCracks = len(crackList)
@@ -384,7 +394,7 @@ for crk in np.arange(numCracks):
     
     ## in this next bit of code you are pltting the elevation drop along the linear
     ## by finding the distance between points and getting a best linear fit
-    fig,ax = plt.subplots(1,1)
+    # fig,ax = plt.subplots(1,1)
     DEM_dat = DEM_rast.data
     lenX = np.size(c_x)
     z = np.zeros(lenX)
@@ -394,12 +404,12 @@ for crk in np.arange(numCracks):
         z[D] = DEM_dat[int(c_y[D]),int(c_x[D])]
     
     totalDist = np.cumsum(distArr)
-    ax.plot(totalDist,z)
+    # ax.plot(totalDist,z)
     
     zfit = np.polyfit(totalDist,z,1)
     fncP = np.poly1d(zfit)
     zFit = fncP(totalDist)
-    ax.plot(totalDist,zFit)
+    # ax.plot(totalDist,zFit)
     aveSlopeCrack[crk] = np.abs(zfit[0])
 
 #%%
