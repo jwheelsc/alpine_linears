@@ -28,19 +28,26 @@ from scipy.ndimage import median_filter
 
 # %% import the the raster files created by another program
 
-foldr = 'C:\\Users\\jcrompto\\Documents\\code\\python_scripts\\detect_alpine_linears\\saveDEMs\\Joffre\\'
+# foldr = 'C:\\Users\\jcrompto\\Documents\\code\\python_scripts\\detect_alpine_linears\\saveDEMs\\Joffre\\'
 
-jj = 0
-ii = 1
+# jj = 0
+# ii = 0
 
-str1 = foldr + 'diffDEM_' + str(jj) + '_' + str(ii) + '.tif'
+# str1 = foldr + 'diffDEM_' + str(jj) + '_' + str(ii) + '.tif'
+# dd_rast = gu.Raster(str1)
+# str2 = foldr + 'diffDEM_hs_' + str(jj) + '_' + str(ii) + '.tif'
+# ddhs_rast = gu.Raster(str2)
+# str3 = foldr + 'rastDEM_' + str(jj) + '_' + str(ii) + '.tif'
+# DEM_rast = gu.Raster(str3)
+
+
+foldr = 'C:\\Users\\jcrompto\\Documents\\code\\python_scripts\\jupyter_notebooks\\remote_sensing\\find_linears\\saved_mtx\\'
+str1 = foldr + 'diffDEM.tif'
 dd_rast = gu.Raster(str1)
-str2 = foldr + 'diffDEM_hs_' + str(jj) + '_' + str(ii) + '.tif'
+str2 = foldr + 'diffDEM_hs.tif'
 ddhs_rast = gu.Raster(str2)
-str3 = foldr + 'rastDEM_' + str(jj) + '_' + str(ii) + '.tif'
+str3 = foldr + 'rastDEM.tif'
 DEM_rast = gu.Raster(str3)
-
-
 # %% plot the raster data being imorted
 ddhs = ddhs_rast.data
 dd = dd_rast.data
@@ -52,7 +59,8 @@ halfBcs = int(np.floor(bcs/2))
 bckChipSize = 9    ## this is the size of the chip used to identify the background
 halfBkgChip = int(np.floor(bckChipSize/2))
 diffAnomThresh = 11  ## this is how far above the background the center pixel must be to qualify as a starting point
-dmSz = 300-20          ## the size of the sampling window
+#dmSz = 300-20          ## the size of the sampling window
+dmSz = 150
 gaussSigma=1      ## size of the standard deviation of the gaussian smooting window
 distThresh = 10
 minCrackLength = 10
@@ -412,5 +420,13 @@ for crk in np.arange(numCracks):
     # ax.plot(totalDist,zFit)
     aveSlopeCrack[crk] = np.abs(zfit[0])
 
-#%%
-#plt.plot(np.flipud(expandedCrackU[:,1]),np.flipud(expandedCrackU[:,0]),'.')
+# %%
+plt.imshow(ddhs,cmap = 'Grays')
+plt.plot(np.flipud(expandedCrackU[:,1]),np.flipud(expandedCrackU[:,0]),'g.')
+
+# %%
+crack = crackList[2]
+#vect_rasterized = crack.rasterize(dd_rast)
+crack_rast = dd_rast.copy(new_array=crack)
+crack_rast.show(cmap = "Greys_r")
+crack_rast.save(r'C:\Users\jcrompto\Documents\remote_sensing\Q_projects\joffre\crack.tif')
