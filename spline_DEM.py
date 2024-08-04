@@ -42,7 +42,7 @@ plotMaps = False
 #llx = 536500; lly = 5578500; urx = 537900; ury = 5579900;  #this is a bigger domain
 
 
-firstLX = 535000; aimingRX = 540300; firstLY = 5574700;  aimingRX = 5580000
+firstLX = 535000; aimingRY = 540300; firstLY = 5574700;  aimingRX = 5580000
 
 lenx = 300
 ofs = 50
@@ -57,13 +57,13 @@ lowerBounds = np.arange(start = firstLY,stop = lastLY, step = lenx-ofs)
 upperBounds = lowerBounds+lenx
 
 # %%
-#for jj in np.arange(np.size(upperBounds)):
-for jj in np.arange(1):
+for jj in np.arange(np.size(upperBounds)):
+# for jj in np.arange(1):
 
     ury = upperBounds[jj]
     lly = lowerBounds[jj]
-    #for ii in np.arange(np.size(rightBounds)):
-    for ii in np.arange(start=1,stop=2):
+    for ii in np.arange(np.size(rightBounds)):
+    # for ii in np.arange(start=2,stop=3):
         
         llx = leftBounds[ii]
         urx = rightBounds[ii]
