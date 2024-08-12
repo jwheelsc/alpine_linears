@@ -18,6 +18,8 @@ import matplotlib.patches as mpatches
 from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'qt')
 import sys
+from scipy import interpolate
+
 
 # %%
 
@@ -54,10 +56,34 @@ for jj in np.arange(21):
         if np.size(xCoords)>1:
             for p in np.arange(len(xCoords)):
                 x = xCoords[p]
+                xn = x-x[0]
                 y = yCoords[p]
+                yn = y-y[0]
                 setList = np.hstack((y,x))
                 finalCrackList.append(setList)
                 ax.plot(np.flipud(y),np.flipud(x),'.')
+                if np.size(x)>10:
+                    
+                    c_xU = np.unique(xn)
+                    sortEls = np.argsort(c_xU)
+                    c_xU = np.sort(c_xU)
+                    lx = np.size(c_xU)
+                    meanY = np.zeros(lx)
+                    for r in np.arange(lx):
+                        elX = np.where(xn==c_xU[r])
+                        meanY[r] = np.mean(yn[elX]) 
+                    #plt.plot(c_xU,meanY,'o')
+                    cspl= interpolate.CubicSpline(xn,meanY)
+                    ynew = cspl(c_xU)
+                    #plt.plot(xnew,ynew,'r-')
+                    pfit = np.polyfit(c_xU,meanY,4)
+                    p = np.poly1d(pfit)
+                    pFit = p(c_xU)
+                    fig, ax = plt.subplots(1)
+                    ax.plot(xn,yn)
+                    ax.plot(c_xU,pFit,'-')
+                    magX = np.square(x)
+                    sys.exit()
                 
         
     
